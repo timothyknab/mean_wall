@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- `ng-app` below sets up Angular app, string name must match module name in angular app config -->
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Grab Angular -->
+    <script src="angular/angular.js"></script>
+    <script src="angular-route/angular-route.js"></script>
+    <!-- Angular App Config and Routes Setup: app name in this file must match `ng-app` value in <html> tag above -->
+    <script src="js/config/angular-app.js"></script>
+    <!-- Load Angular Controllers -->
+    <script src="js/controllers/angular-user-controller.js"></script>
+    <script src="js/controllers/angular-wall-controller.js"></script>
+    <!-- Load Angular Factories -->
+    <script src="js/factories/angular-user-factory.js"></script>
+    <script src="js/factories/angular-wall-factory.js"></script>
+    <!-- Grab CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <title>MEAN Wall</title>
+</head>
+<body>
+    <fieldset><legend>Project Details:</legend>
+        <p>In this assignment we will be working with Angular, Mongoose and Express Session. Using the Angular <a href="https://docs.angularjs.org/api/ng/service/$http" title="Angular $http Documentation" alt="Angular $http Documentation"><em>$http</em></a> service, we are able to make AJAX requests to our server-side routes, whom pass data to our server side controller, which does the actual database querying.</p>
+        <p>This data is then sent back as an http response, in the form of JSON data, which can then be utilized in the angular factory to update our angular controller and Views. By using $http promises, we're able to make requests to the database and update the DOM upon a response from the server, real-time without a page reload (yay AJAX).</p>
+        <p>Note: This page has <em>not been</em> styled for mobile or responsive formatting.</p>
+    </fieldset>
+    <div ng-view></div>
+</body>
+</html>

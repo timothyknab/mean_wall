@@ -1,0 +1,8 @@
+<h3 id="login">Enter a username to continue: </br> <small>If your username does not exist, one will automatically be created for you.</small></h3>
+<div class="errors" ng-repeat="err in errors">
+    <p ng-bind="err.username.message"></p>
+</div>
+<form ng-submit='login()' id="login-form">
+    <input type="text" name="username" id="username" ng-model="user.username" placeholder="ie, RazorBlazor">
+    <input type="submit" value="Enter">
+</form>

@@ -1,0 +1,57 @@
+<h1>Full MEAN Wall</h1>
+<h3>Welcome, <span ng-bind="myUser.username"></span></h3>
+<form ng-submit="logout()">
+    <input type="submit" value="Sign Out">
+</form>
+<fieldset id="user-info"><legend>User Information:</legend>
+    <dl>
+        <dt>Username:</dt>
+        <dd>>> <span ng-bind="myUser.username"></span></dd>
+        <dt>ID:</dt>
+        <dd>>> <span ng-bind="myUser._id"></span></dd>
+        <dt>Created At:</dt>
+        <dd>>> <span ng-bind="myUser.createdAt | date: 'h:mm:ssa - M/d/yyyy'"></span></dd>
+        <dt>Updated At:</dt>
+        <dd>>> <span ng-bind="myUser.updatedAt | date: 'h:mm:ssa - M/d/yyyy'"></span></dd>
+    </dl>
+</fieldset>
+
+<form ng-submit="newPost()">
+    <h2 id="post-header">Post a message:</h2>
+    <div class="errors" ng-repeat="err in errors">
+        <p ng-bind="err.message.message"></p>
+    </div>
+    <label for="post-text">
+        <textarea name="post-text" id="post-text" cols="100" rows="10" ng-model="postMessage.message"></textarea>
+    </label>
+    <input type="submit" value="Post a Message" id="post-submit">
+</form>
+<div ng-repeat="post in allPosts | orderBy:'-createdAt'" class="post-messages">
+    <h3> <span ng-bind="post.username"></span> - <span ng-bind="post.createdAt | date: 'h:mm:ssa M/d/yyyy'"></span>:</h3>
+    <p ng-bind="post.message"></p>
+    <div ng-repeat="comment in post.comments | orderBy: 'createdAt'" class='comments'>
+        <h4><span ng-bind="comment.username"></span> - <span ng-bind="comment.createdAt | date: 'h:mm:ssa M/d/yyyy'"></span>:</h4>
+        <p ng-bind="comment.message"></p>
+    </div>
+
+    <form ng-submit="newComment(post)" class='comments'>
+        <label for="{{post._id}}" >
+            <h3>Post a comment:</h3>
+            <div class="errors" ng-repeat="err in commentErrors">
+                <p ng-bind="err.message.message"></p>
+            </div>
+            <textarea name="comment_text" id="{{post._id}}" cols="93" rows="5" ng-model="post.comment" class="comment-text"></textarea>
+            <!--  Note: The above is a confusing situation because we are using `ng-model` within an `ng-repeat`. This causes some bizarre scoping behavior due to the architecture of javascript
+            itself. The key to the solution here, is to setup `ng-repeat` to `track by $index`. Then, be sure to set `ng-model` as an extension off the shorthand `ng-repeat` data. In this example,
+            we are using `post in allPosts` in our `ng-repeat`, thus, we must use `post` in our `ng-model`. This will only work if we add a property, and in this example we have set it to be
+            `post.comment`. You will then see in the `ng-submit` function, that we are passing our `$index` to our controller. To get the data we entered from our single message, we have to use
+            `$scope.allPosts[idx].comment`, `idx` being the `$index` we passed along. See your controller and the parameters set fpr `newComment` and you'll see. In a nutshell: by tracking with
+            $index, we are able to gather the actual index value of each post. When we pass that to our controller, we can then lookup a certain post in allPosts based on index, and see only
+            that one comment. Because of the two way binding, when we start typing, we are already adding the `.comment` property to our allPosts[x] (whatever message we are looking at). It is
+            by this tracking by index, that we are able to only pass along a single message. Note: the actual database values are not being adjusted. ONLY the data that has been given to the scope
+            is actually being affected. Each time we send a comment however, we are caching a new copy of allPosts from the DB and overwriting our $scope, so these changes during commenting do not
+            affect anything -->
+            <input type="submit" value="Post Comment!" class="comment-submit">
+        </label>
+    </form>
+</div>
