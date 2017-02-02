@@ -86,8 +86,138 @@ module.exports = {
         // Look up all posts via mongoose from our mongoDB:
         Post.find({})
             .then(function(allPosts) {
-                console.log('Get All Posts Process (4S): All Posts retrieved:', allPosts);
-                return res.json(allPosts);
+
+
+                // res.json(allPosts);
+
+                for (var i = 0; i < allPosts.length; i++) {
+                    console.log('/////////////////////');
+                    console.log('/////////////////////');
+                    console.log({
+                        post: allPosts[i],
+                        index: i,
+                        allPostsLength: allPosts.length,
+                    });
+                    _post = allPosts[i]; // created '_post' to attempt to capture the post for use in the query below (where it seemed `allPosts[i]` was no longer accessible)
+                    PostComment.find({postID: allPosts[i]._id}) // due to the asynchronicity of this event, our '_post' and 'i' variables below become off-pace with the data above this query
+                        .then(function(comments) {
+                            console.log('^^^^^^^^^^^^^^^^^^');
+                            console.log('^^^^^^^^^^^^^^^^^^');
+                            console.log({
+                                post: _post, // _post here is changed above before the data is returned
+                                comments: comments,
+                                index: i,
+                            })
+                            console.log('^^^^^^^^^^^^^^^^^^');
+                            console.log('^^^^^^^^^^^^^^^^^^');
+                        })
+                    console.log('/////////////////////');
+                    console.log('/////////////////////');
+                };
+
+
+                // for (var idx in allPosts) {
+                //     console.log('/////////////////');
+                //     console.log('/////////////////');
+                //     console.log('/////////////////');
+                //     console.log('/////////////////');
+                //     console.log({
+                //         post: allPosts[idx],
+                //         index_value: idx,
+                //         postArrayLength: allPosts.length,
+                //     });
+                //     console.log('/////////////////');
+                //     console.log('/////////////////');
+                //     console.log('/////////////////');
+                //     console.log('/////////////////');
+                //
+                //     var _post = allPosts[idx];
+                //
+                //     PostComment.find({postID: _post._id})
+                //         .then(function(postComments) {
+                //             console.log('>>>>>>>>>>>>>>>>>>>>');
+                //             console.log({
+                //                 post: _post,
+                //                 postComments: postComments,
+                //                 index_value: idx,
+                //             });
+                //             console.log('<<<<<<<<<<<<<<<<<<<<');
+                //         })
+                //         .catch(function(err) {
+                //             console.log(err);
+                //         })
+                //
+                //     if (idx == allPosts.length-1) {
+                //         console.log('WE DONE');
+                //     }
+                //
+                //     console.log('Ending round');
+                // }
+
+                res.send('Cool');
+                ////////////////////////////////////////////////////////
+                ///////////////// D O  S O M E T H I N G ///////////////
+                ////////////////////////////////////////////////////////
+                /*                                                    */
+                /* Do Something Here to Look Up Each post (for loop?) */
+                /* For each post, use the post ID & find all comments */
+                /* Then return an object which includes all each post */
+                /* and all comments (this may or may not be easy)     */
+                /*                                                    */
+                ////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////
+                //
+                // var postsWithComments = [];
+                // console.log('////////////////// A L L   P O S T S //////////////////');
+                // console.log(allPosts);
+                // console.log('///////////// E N D   A L L   P O S T S //////////////');
+                //
+                // for (var i = 0; i < allPosts.length; i++) {
+                //
+                //     var thisPost = allPosts[i];
+                //
+                //     PostComment.find({postID: thisPost._id})
+                //     .then(function(allPostComments){
+                //         console.log('//// P O S T   I D: ' + thisPost._id + ' ////');
+                //         thisPost.comments = allPostComments;
+                //         thisPost.save();
+                //         postsWithComments.push(thisPost);
+                //         console.log('//// C O M M E N T S ////');
+                //         console.log(thisPost.comments);
+                //         console.log('//// P U S H E D  S O  F A R /////');
+                //         console.log(postsWithComments);
+                //         if (i == allPosts.length) {
+                //             console.log('//////// P O S T S  L O O P  C O M P L E T E /////////');
+                //             console.log(postsWithComments);
+                //             console.log('Get All Posts Process (4S): All Posts and comments retrieved:', postsWithComments);
+                //             return res.json(postsWithComments);
+                //         }
+                //     })
+                //     .catch(function(err) {
+                //         console.log()
+                //     })
+                // }
+                //
+                // /*
+                //
+                //     Find Posts /done
+                //
+                //     Loop through allPosts /done
+                //
+                //         For each, find comments /done
+                //
+                //         Add comments to each post (as `comments`) /done
+                //
+                //         res.json the now updated allPosts objects (with attached comments) /done
+                //
+                //
+                // */
+                //
+                //
+                ////////////////////////////////////////////////////////
+                //////////////// E N D  S O M E T H I N G //////////////
+                ////////////////////////////////////////////////////////
             })
             .catch(function(err) {
                 console.log(err);
@@ -123,23 +253,39 @@ module.exports = {
                     .then(function(user) {
                         // sets username from session lookup to the username on the comment:
                         newComment.updateUsername(user.username);
-                        console.log('Comment Process (3S-d): looking up post for comment using postID....once found, pushing comment into post\'s comments array...');
+                        console.log('Comment Process (3S-d): username on comment has been updated...');
+
+
+                        return res.json({user: user, comment: newComment});
+
+
+                        ////////////////////////////////////////////////////////
+                        ////////////////   D U P L I C A T I O N  //////////////
+                        ////////////////////////////////////////////////////////
                         // now we look up the actual post, based upon the comment's postID so that we can push the comment into the post array:
-                        Post.findById(newComment.postID)
-                            .then(function(foundPost) {
-                                // pushes the new comment into the post.comments array:
-                                foundPost.addComment(newComment);
-                                console.log('Comment Process (3S-e): comment has been successfully pushed into post.comments array...sending back the user whom commented, the comment, and the post it belongs to...');
-                                return res.json({
-                                    user: user,
-                                    comment: newComment,
-                                    post: foundPost,
-                                });
-                            })
-                            .catch(function(err) {
-                                console.log(err);
-                                return res.status(500).json(err);
-                            })
+                        // Post.findById(newComment.postID)
+                        //     .then(function(foundPost) {
+                        //         // pushes the new comment into the post.comments array:
+                        //         /////////////////////////////
+                        //         ///     THIS IS WHERE     ///
+                        //         ///    THE DUPLICATION    ///
+                        //         ///      HAS OCCURRED     ///
+                        //         /////////////////////////////
+                        //         foundPost.addComment(newComment);
+                        //         console.log('Comment Process (3S-e): comment has been successfully pushed into post.comments array...sending back the user whom commented, the comment, and the post it belongs to...');
+                        //         return res.json({
+                        //             user: user,
+                        //             comment: newComment,
+                        //             post: foundPost,
+                        //         });
+                        //     })
+                        //     .catch(function(err) {
+                        //         console.log(err);
+                        //         return res.status(500).json(err);
+                        //     })
+                        ////////////////////////////////////////////////////////
+                        //////////////   E N D   D U P L I C A T E  ////////////
+                        ////////////////////////////////////////////////////////
                     })
                     .catch(function(err) {
                         console.log(err);

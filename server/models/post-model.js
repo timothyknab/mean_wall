@@ -20,21 +20,15 @@ var PostSchema = new mongoose.Schema (
     {
         message: {
             type: String,
-            minlength: 2,
-            maxlength: 2000,
+            minlength: [2, 'Your post must be at least 2 characters.'],
+            maxlength: [2000, 'Your post must be less than 2000 characters.'],
             /*
                 Note: the above is commented out because we are doing custom validations below.
                 If we had left the above uncommented, they would override the validator function below.
                 Secondly, the clarify, `minlength` is literally the minimum length (2), (ie, 1 is unaccepted but 2 is accepted) -- the same for maxlength.
             */
-            required: true,
+            required: [true, 'You cannot submit an empty post.'],
             trim: true,
-            validate: {
-                validator: function(message) {
-                    return message.length > 1 && message.length < 2001;
-                },
-                message: 'Your post message must be at least 2 characters and less than 2000 characters in length.'
-            }
         }, // end message field
         userID: {
             type: mongoose.Schema.Types.ObjectId,
@@ -49,10 +43,6 @@ var PostSchema = new mongoose.Schema (
         timestamps: true,
     }
 );
-
-// Any pre-save methods would go here.
-
-// Any additional instance methods would go here.
 
 // updates userID based upon current session login info:
 PostSchema.methods.updateUserID = function(id) {

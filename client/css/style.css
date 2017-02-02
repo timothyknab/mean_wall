@@ -51,7 +51,7 @@ fieldset, fieldset p {
 }
 
 
-.comments {
+.comm {
     margin-left: 40px;
 }
 
@@ -68,11 +68,11 @@ fieldset, fieldset p {
     margin: 25px 238px 25px 238px;
 }
 
-.comment-text {
+.comm-text {
     display: block;
 }
 
-.comment-submit {
+.comm-submit {
     display: block;
     margin: 15px 153px 0px auto;
 }

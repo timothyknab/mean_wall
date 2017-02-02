@@ -19,16 +19,10 @@ var CommentSchema = new mongoose.Schema (
     {
         message: {
             type: String,
-            minlength: 2,
-            maxlength: 2000,
-            required: true,
+            minlength: [2, 'Your comment must be at least 2 characters.'],
+            maxlength: [2000, 'Your comment must be less than 2000 characters.'],
+            required: [true, 'You cannot submit an empty comment.'],
             trim: true,
-            validate: {
-                validator: function(message) {
-                    return message.length > 1 && message.length < 2001;
-                },
-                message: 'Your comment message must be at least 2 characters and less than 2000 characters in length.'
-            }
         }, // end message field
         userID: {
             type: mongoose.Schema.Types.ObjectId,

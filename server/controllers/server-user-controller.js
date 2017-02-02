@@ -24,26 +24,12 @@ var User = require('mongoose').model('User');
 module.exports = {
     // Find an existing username:
     register: function(req, res) {
-        require('../modules/user-helper-module')(req, res, User);
+        console.log('Login Process (6S): Server now handling information and going to attempt to create a user since existing user could not be found...', req.body);
+        require('./controller_modules/user-register-module')(req, res, User);
 
     },
     login: function(req, res) {
-        console.log('Login Process (3S): Server now handling information...Looking to see if user exists first...');
-        User.findOne({username: req.body.username})
-            .then(function(foundUser) {
-                if (!foundUser) {
-                    console.log('Login Process (4S): User was NOT found, preparing to create...going back to front end...');
-                    return res.json(foundUser);
-                } else {
-                    console.log('Login Process (4S): User has been SUCCESSFULLY found...', foundUser._id);
-                    req.session.userID = foundUser._id; // sets session ID to user id from Mongo
-                    console.log('Login Process (5S): Cookie has been created for found user....going back to front end now...', req.session.userID);
-                    return res.json(foundUser);
-                }
-            })
-            .catch(function(err) {
-                console.log(err);
-                return res.json(err);
-            })
+        console.log('Login Process (3S): Server now handling information...Looking to see if user exists...if successful will procceed to login, else will attempt to register...');
+        require('./controller_modules/user-login-module')(req, res, User);
     },
 };
