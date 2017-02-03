@@ -139,9 +139,14 @@ QUESTION 7 [RESOLVED]:
 
 
 
-//////////// WHERE I LEFT OFF //////////// @ 7:24PM
+//////////// WHERE I LEFT OFF //////////// @ 1:31AM
 
-    + I figure out (finally!) how to do case insensitive queries in mongoose: however, I probably placed this code in the wrong place.
-    + I need to re-factor this code and see if I can blend it into the user model as pre.save() and instance methods.
-    + However, for now it is functional.
-    + It might be good to try and move on and see if you can understand setting up the `req.user` middleware first, and then circle back since it is solved for now and is more of a minor issue in helping to clean up the code and might be a nice final end cap.
+    + I attempted to fix database redundancy with the comments being pushed into the .comments array within the post schema. However, now I'm hitting async issues when trying to nest mongoose queries.
+        Essentially, I was able to query the DB to get all posts, and then tried to go through a for loop on all posts and query the DB for the comments that pertained to each (is this the wrong way?)
+        As the for loop moves faster through the iterations than the promise data is returned, my console logs or variable manipulations within the promise was out of synch with the variables in
+        the scope of the for loop only (and not within the scope of the promise). WTF MATE
+
+        [ATTEMPTED SOLUTION]: I want to try and pass back all the posts to the Angular Controller, and try putting my for loop in the controller so that for each post, a query is sent to the DB
+        and the comments being returned, are attached back to the posts and the scope updated. I don't know if this will be a lot slower than the other method, or if this too will just cause
+        the same async problem, but worth a shot. If I can't figure it out, that is when I'm going to message Jason again and post to stack exchange with a brief example (maybe I can create a snippet
+        for Jason ahead of time as well).

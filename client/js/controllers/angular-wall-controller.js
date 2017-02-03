@@ -41,6 +41,15 @@ app.controller('wallController', ['$scope', 'wallFactory', '$location', '$routeP
         // once posts are retrieved from DB, this callback function updates scope to reflect all posts:
         showPostsCallback: function(allPosts) {
             console.log('Get All Posts Process Complete: Updating Controller...');
+
+            /*
+
+            Could you insert something here that, after receiving all the posts, iterates through (for loop)
+            and queries for each post's comments? Once the comments are returned, here, the data could be put
+            together for the front end....
+
+            */
+
             $scope.allPosts = allPosts;
         },
         // upon comment submission, clears post text area and then run get all posts function:

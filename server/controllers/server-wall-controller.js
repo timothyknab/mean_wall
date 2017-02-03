@@ -88,73 +88,72 @@ module.exports = {
             .then(function(allPosts) {
 
 
-                // res.json(allPosts);
 
-                for (var i = 0; i < allPosts.length; i++) {
-                    console.log('/////////////////////');
-                    console.log('/////////////////////');
-                    console.log({
-                        post: allPosts[i],
-                        index: i,
-                        allPostsLength: allPosts.length,
-                    });
-                    _post = allPosts[i]; // created '_post' to attempt to capture the post for use in the query below (where it seemed `allPosts[i]` was no longer accessible)
-                    PostComment.find({postID: allPosts[i]._id}) // due to the asynchronicity of this event, our '_post' and 'i' variables below become off-pace with the data above this query
-                        .then(function(comments) {
-                            console.log('^^^^^^^^^^^^^^^^^^');
-                            console.log('^^^^^^^^^^^^^^^^^^');
-                            console.log({
-                                post: _post, // _post here is changed above before the data is returned
-                                comments: comments,
-                                index: i,
-                            })
-                            console.log('^^^^^^^^^^^^^^^^^^');
-                            console.log('^^^^^^^^^^^^^^^^^^');
-                        })
-                    console.log('/////////////////////');
-                    console.log('/////////////////////');
-                };
-
-
-                // for (var idx in allPosts) {
-                //     console.log('/////////////////');
-                //     console.log('/////////////////');
-                //     console.log('/////////////////');
-                //     console.log('/////////////////');
-                //     console.log({
-                //         post: allPosts[idx],
-                //         index_value: idx,
-                //         postArrayLength: allPosts.length,
-                //     });
-                //     console.log('/////////////////');
-                //     console.log('/////////////////');
-                //     console.log('/////////////////');
-                //     console.log('/////////////////');
-                //
-                //     var _post = allPosts[idx];
-                //
-                //     PostComment.find({postID: _post._id})
-                //         .then(function(postComments) {
-                //             console.log('>>>>>>>>>>>>>>>>>>>>');
-                //             console.log({
-                //                 post: _post,
-                //                 postComments: postComments,
-                //                 index_value: idx,
-                //             });
-                //             console.log('<<<<<<<<<<<<<<<<<<<<');
+                /////////// SIMPLIFIED ATTEMPT:
+                // for (var i = 0; i < allPosts.length; i++) {
+                //     _post = allPosts[i];
+                //     console.log('_post variable before:', _post);
+                //     PostComment.find({postID: allPosts[i]})
+                //         .then(function(comments) {
+                //             console.log(_post);  / ** If you notice the console log for this item, we can see that `_post` is updating before the data is returned. How do I fix this?
+                //             console.log(comments);
+                //              // do something here to push the found comments into an array attached to the post
+                //              // check if on last iteration and if so, then res.json send the new post array now with comments attached
                 //         })
                 //         .catch(function(err) {
                 //             console.log(err);
                 //         })
-                //
-                //     if (idx == allPosts.length-1) {
-                //         console.log('WE DONE');
-                //     }
-                //
-                //     console.log('Ending round');
                 // }
 
-                res.send('Cool');
+
+                return res.json(allPosts);
+
+
+                //////////// QUERY EXPERIMENT USING MAP FUNCTION:
+                // var postIDs = allPosts.map(function(post) {
+                //     return post._id;
+                // });
+                //
+                // console.log(postIDs);
+                // PostComment.find({postID: {$in: postIDs}})
+                //     .then(function(postComments) {
+                //         console.log(postComments);
+                //     })
+                //     .catch(function(err) {
+                //         console.log(err);
+                //     })
+
+
+                //////////// ATTEMPT AT LOOPING THROUGH ALL POSTS BUT AGAIN HITTING ASYNC ISSUES:
+                // for (var i = 0; i < allPosts.length; i++) {
+                //     console.log('/////////////////////');
+                //     console.log('/////////////////////');
+                //     console.log({
+                //         post: allPosts[i],
+                //         index: i,
+                //         allPostsLength: allPosts.length,
+                //     });
+                //     _post = allPosts[i]; // created '_post' to attempt to capture the post for use in the query below (where it seemed `allPosts[i]` was no longer accessible)
+                //     PostComment.find({postID: _post._id}) // due to the asynchronicity of this event, our '_post' and 'i' variables below become off-pace with the data above this query
+                //         .then(function(comments) {
+                //             console.log('^^^^^^^^^^^^^^^^^^');
+                //             console.log('^^^^^^^^^^^^^^^^^^');
+                //             console.log({
+                //                 post: _post, // _post here is changed above before the data is returned
+                //                 comments: comments,
+                //                 index: i,
+                //             })
+                //             console.log('^^^^^^^^^^^^^^^^^^');
+                //             console.log('^^^^^^^^^^^^^^^^^^');
+                //         })
+                //     console.log('/////////////////////');
+                //     console.log('/////////////////////');
+                //     if (i == allPosts.length-1) {
+                //         res.json(allPosts);
+                //     }
+                // };
+
+
                 ////////////////////////////////////////////////////////
                 ///////////////// D O  S O M E T H I N G ///////////////
                 ////////////////////////////////////////////////////////
@@ -168,6 +167,8 @@ module.exports = {
                 ////////////////////////////////////////////////////////
                 ////////////////////////////////////////////////////////
                 //
+                //
+                /////////////// THIS WAS MY FIRST ATTEMPT BEFORE I REALIZED ASYNC WAS CAUSING ISSUE:
                 // var postsWithComments = [];
                 // console.log('////////////////// A L L   P O S T S //////////////////');
                 // console.log(allPosts);
@@ -258,10 +259,11 @@ module.exports = {
 
                         return res.json({user: user, comment: newComment});
 
-
-                        ////////////////////////////////////////////////////////
-                        ////////////////   D U P L I C A T I O N  //////////////
-                        ////////////////////////////////////////////////////////
+                        /// THIS IS THE OLD CODE THAT WAS CAUSING DB DUPLICATION /////
+                        //////////////////////////////////////////////////////////////
+                        ///////////////////   D U P L I C A T I O N  /////////////////
+                        //////////////////////////////////////////////////////////////
+                        //
                         // now we look up the actual post, based upon the comment's postID so that we can push the comment into the post array:
                         // Post.findById(newComment.postID)
                         //     .then(function(foundPost) {
@@ -271,7 +273,7 @@ module.exports = {
                         //         ///    THE DUPLICATION    ///
                         //         ///      HAS OCCURRED     ///
                         //         /////////////////////////////
-                        //         foundPost.addComment(newComment);
+                        //         foundPost.addComment(newComment); // <--- HERE WAS CAUSING DUPLICATION
                         //         console.log('Comment Process (3S-e): comment has been successfully pushed into post.comments array...sending back the user whom commented, the comment, and the post it belongs to...');
                         //         return res.json({
                         //             user: user,
@@ -283,9 +285,10 @@ module.exports = {
                         //         console.log(err);
                         //         return res.status(500).json(err);
                         //     })
-                        ////////////////////////////////////////////////////////
-                        //////////////   E N D   D U P L I C A T E  ////////////
-                        ////////////////////////////////////////////////////////
+                        //
+                        //////////////////////////////////////////////////////////////
+                        /////////////////   E N D   D U P L I C A T E  ///////////////
+                        //////////////////////////////////////////////////////////////
                     })
                     .catch(function(err) {
                         console.log(err);
