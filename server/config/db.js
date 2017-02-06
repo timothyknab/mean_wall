@@ -42,7 +42,7 @@ mongoose.connect('mongodb://localhost/' + dbName); // this connects Mongoose to 
 // Mongoose/Mongo/Node connection events:
 mongoose.connection
     .on('connected', function() {
-        console.log('Mongoose now connected to MongoDB usbing DB:', dbName);
+        console.log('Mongoose now connected to MongoDB using DB:', dbName);
     })
     .on('disconnected', function() {
         console.log('Mongoose disconected from:', dbName);

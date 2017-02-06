@@ -76,6 +76,8 @@ QUESTION 3 [RESOLVED FOR NOW--SEE #SLACK]:
             There may be ways to incorporate some of the methods in that module into the actual schema, either as pre.save() functions or as instance methods. I did experiment with these approaches, however, I was trying to avoid creating an instance of my object until all tests were passed. IE, I could not access any instance methods of that object unless the
             object was already created. I suppose I could have used the pre.save methods to accomplish this and may try to revise my code to improve it and re-factor areas needed.
 
+            Update: I did end up converting everything into a pre save hook and instance methods to accomplish the validations. I also used the built in validations for the easy stuff, then used custom validations for the regex patterns, etc.
+
 QUESTION 4 [RESOLVED]:
 
     + See: client/js/factories/angular-wall-factory
@@ -139,14 +141,9 @@ QUESTION 7 [RESOLVED]:
 
 
 
-//////////// WHERE I LEFT OFF //////////// @ 1:31AM
+//////////// WHERE I LEFT OFF //////////// @ 4:17AM
 
-    + I attempted to fix database redundancy with the comments being pushed into the .comments array within the post schema. However, now I'm hitting async issues when trying to nest mongoose queries.
-        Essentially, I was able to query the DB to get all posts, and then tried to go through a for loop on all posts and query the DB for the comments that pertained to each (is this the wrong way?)
-        As the for loop moves faster through the iterations than the promise data is returned, my console logs or variable manipulations within the promise was out of synch with the variables in
-        the scope of the for loop only (and not within the scope of the promise). WTF MATE
+    + I was able to use the `populate()` method to get all comments for all posts, and re-arranged my database design so that when new comments are created for a post, an array of comment IDs inside of the post
+    is kept. I probably didn't have to change my DB design entirely this way, but it seemed natural as it was happening and was in line with what I read in the docs.
 
-        [ATTEMPTED SOLUTION]: I want to try and pass back all the posts to the Angular Controller, and try putting my for loop in the controller so that for each post, a query is sent to the DB
-        and the comments being returned, are attached back to the posts and the scope updated. I don't know if this will be a lot slower than the other method, or if this too will just cause
-        the same async problem, but worth a shot. If I can't figure it out, that is when I'm going to message Jason again and post to stack exchange with a brief example (maybe I can create a snippet
-        for Jason ahead of time as well).
+    + Now I need to figure out how I can revise the database so that the username for each post and comment can be grabbed, rather than store the `username` field inside each post and comment object. Since I already have the `_user` field in each object, which stores the `_id` from the creator, I should be able to query (using populate??) to get the username rather than store extra data.

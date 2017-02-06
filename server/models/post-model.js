@@ -12,11 +12,12 @@
 ////////////////////////////////
 
 // Setup dependencies:
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
     // bcrypt could go here if we needed to add in a password hashing
 
 // Setup a schema:
-var PostSchema = new mongoose.Schema (
+var PostSchema = new Schema (
     {
         message: {
             type: String,
@@ -30,14 +31,17 @@ var PostSchema = new mongoose.Schema (
             required: [true, 'You cannot submit an empty post.'],
             trim: true,
         }, // end message field
-        userID: {
-            type: mongoose.Schema.Types.ObjectId,
+        _user: {
+            type: Schema.Types.ObjectId,
             ref: 'User'
         },
         username: {
             type: String,
         },
-        comments: [],
+        comments: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Comment'
+        }],
     },
     {
         timestamps: true,
@@ -46,7 +50,7 @@ var PostSchema = new mongoose.Schema (
 
 // updates userID based upon current session login info:
 PostSchema.methods.updateUserID = function(id) {
-    this.userID = id;
+    this._user = id;
     this.save();
     return true;
 };
@@ -59,8 +63,8 @@ PostSchema.methods.updateUsername = function(username) {
 };
 
 // adds comment to post's comments array:
-PostSchema.methods.addComment = function(comment) {
-    this.comments.push(comment);
+PostSchema.methods.addComment = function(commentID) {
+    this.comments.push(commentID);
     this.save();
     return true;
 };

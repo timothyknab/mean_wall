@@ -15,11 +15,12 @@
 ////////////////////////////////
 
 // Setup dependencies here (mongoose, bcrypt):
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 // bcrypt could go here if we needed to add in a password hashing later
 
 // Setup a schema:
-var UserSchema = new mongoose.Schema (
+var UserSchema = new Schema (
     {
         username: {
             type: String,

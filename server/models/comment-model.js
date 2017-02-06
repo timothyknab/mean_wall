@@ -11,11 +11,12 @@
 ////////////////////////////////
 
 // Setup dependencies:
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 // bcrypt could go here if we needed to add in a password hashing
 
 // Setup a schema:
-var CommentSchema = new mongoose.Schema (
+var CommentSchema = new Schema (
     {
         message: {
             type: String,
@@ -24,15 +25,15 @@ var CommentSchema = new mongoose.Schema (
             required: [true, 'You cannot submit an empty comment.'],
             trim: true,
         }, // end message field
-        userID: {
-            type: mongoose.Schema.Types.ObjectId,
+        _user: {
+            type: Schema.Types.ObjectId,
             ref: 'User'
         },
         username: {
             type: String,
         },
-        postID: {
-            type: mongoose.Schema.Types.ObjectId,
+        _post: {
+            type: Schema.Types.ObjectId,
             ref: 'Post'
         },
     },
@@ -45,7 +46,13 @@ var CommentSchema = new mongoose.Schema (
 
 // Any additional instance methods would go here.
 CommentSchema.methods.updateUserID = function(id) {
-    this.userID = id;
+    this._user = id;
+    this.save();
+    return true;
+};
+
+CommentSchema.methods.updatePostID = function(id) {
+    this._post = id;
     this.save();
     return true;
 };
