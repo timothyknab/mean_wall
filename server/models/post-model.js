@@ -23,15 +23,10 @@ var PostSchema = new Schema (
             type: String,
             minlength: [2, 'Your post must be at least 2 characters.'],
             maxlength: [2000, 'Your post must be less than 2000 characters.'],
-            /*
-                Note: the above is commented out because we are doing custom validations below.
-                If we had left the above uncommented, they would override the validator function below.
-                Secondly, the clarify, `minlength` is literally the minimum length (2), (ie, 1 is unaccepted but 2 is accepted) -- the same for maxlength.
-            */
             required: [true, 'You cannot submit an empty post.'],
             trim: true,
         }, // end message field
-        _user: {
+        user: {
             type: Schema.Types.ObjectId,
             ref: 'User'
         },
@@ -50,17 +45,11 @@ var PostSchema = new Schema (
 
 // updates userID based upon current session login info:
 PostSchema.methods.updateUserID = function(id) {
-    this._user = id;
+    this.user = id;
     this.save();
     return true;
 };
 
-// updates username based on found username based on session ID:
-PostSchema.methods.updateUsername = function(username) {
-    this.username = username;
-    this.save();
-    return true;
-};
 
 // adds comment to post's comments array:
 PostSchema.methods.addComment = function(commentID) {
@@ -70,5 +59,4 @@ PostSchema.methods.addComment = function(commentID) {
 };
 
 // Instantiate our model and export it:
-module.exports = mongoose.model('Post', PostSchema)
-// model is exported as the name of 'Post' using the 'PostSchema' defined above.
+module.exports = mongoose.model('Post', PostSchema);

@@ -26,20 +26,26 @@ require('./config/app')(express, app, bodyParser, path);
 // Setup Mongoose and Models:
 require('./config/db');
 
-// app.use(function(req, res, next) {
-//     var User = require('mongoose').model('User')
-//
-//     if (req.session.userID) {
-//         User.findById(req.session.userID)
-//             .then(function(user) {
-//                 req.user = user;
-//                 next();
-//             })
-//             .catch(next);
-//     }
-//
-//     next(new Error('user not logged in'));
-// ;})
+//////////////////////////////////////////////////////////////////
+///////////// JASON'S EXAMPLE OF MIDDLEWARE USAGE ////////////////
+//////////////////////////////////////////////////////////////////
+//                                                              //
+// app.use(function(req, res, next) {                           //
+//     var User = require('mongoose').model('User')             //
+//                                                              //
+//     if (req.session.userID) {                                //
+//         User.findById(req.session.userID)                    //
+//             .then(function(user) {                           //
+//                 req.user = user;                             //
+//                 next();                                      //
+//             })                                               //
+//             .catch(next);                                    //
+//     }                                                        //
+//                                                              //
+//     next(new Error('User not found.'));                      //
+// ;})                                                          //
+//                                                              //
+//////////////////////////////////////////////////////////////////
 
 // Setup Server-Side Routing:
 require('./config/routes')(app);

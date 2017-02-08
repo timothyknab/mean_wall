@@ -139,11 +139,14 @@ QUESTION 7 [RESOLVED]:
         [UPDATE SOLUTION **READ THIS**] Listen, instead of taking that very complicated way above. DO NOT USE `track by index`, and instead just pass the `post` itself into the `ng-submit` function. So instead it'll look like this: `ng-submit="newComment(post)"`. This will pass the entire `post` object in, and from the `post.comment` we can get our message data.
 
 
+QUESTION 8 [RESOLVED]:
 
+    + How do I handle the situation: "If this data does not exist":
 
-//////////// WHERE I LEFT OFF //////////// @ 4:17AM
+    [SOLUTION]:
 
-    + I was able to use the `populate()` method to get all comments for all posts, and re-arranged my database design so that when new comments are created for a post, an array of comment IDs inside of the post
-    is kept. I probably didn't have to change my DB design entirely this way, but it seemed natural as it was happening and was in line with what I read in the docs.
+        `if (err.errors == null) {
+            // do something
+        }`
 
-    + Now I need to figure out how I can revise the database so that the username for each post and comment can be grabbed, rather than store the `username` field inside each post and comment object. Since I already have the `_user` field in each object, which stores the `_id` from the creator, I should be able to query (using populate??) to get the username rather than store extra data.
+//////////// WHERE I LEFT OFF //////////// @ 3:40AM

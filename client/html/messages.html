@@ -1,5 +1,6 @@
 <h1>Full MEAN Wall</h1>
 <h3>Welcome, <span ng-bind="myUser.username"></span></h3>
+<!-- LOGOUT FORM / BUTTON -->
 <form ng-submit="logout()">
     <input type="submit" value="Sign Out">
 </form>
@@ -15,7 +16,7 @@
         <dd>>> <span ng-bind="myUser.updatedAt | date: 'h:mm:ssa - M/d/yyyy'"></span></dd>
     </dl>
 </fieldset>
-
+<!-- NEW POST FORM -->
 <form ng-submit="newPost()">
     <h2 id="post-header">Post a message:</h2>
     <div class="errors" ng-repeat="err in errors">
@@ -26,13 +27,16 @@
     </label>
     <input type="submit" value="Post a Message" id="post-submit">
 </form>
+<!-- REPEATING POSTS -->
 <div ng-repeat="post in allPosts | orderBy:'-createdAt'" class="post-messages">
-    <h3> <span ng-bind="post.username"></span> - <span ng-bind="post.createdAt | date: 'h:mm:ssa M/d/yyyy'"></span>:</h3>
+    <h3> <span ng-bind="post.user.username"></span> - <span ng-bind="post.createdAt | date: 'h:mm:ssa M/d/yyyy'"></span>:</h3>
     <p ng-bind="post.message"></p>
+    <!-- REPEATING COMMENTS -->
     <div ng-repeat="comment in post.comments" class="comm">
-        <h4><span ng-bind="comment.username"></span> - <span ng-bind="comment.createdAt | date: 'h:mm:ssa M/d/yyyy'"></span>:</h4>
+        <h4><span ng-bind="comment.user.username"></span> - <span ng-bind="comment.createdAt | date: 'h:mm:ssa M/d/yyyy'"></span>:</h4>
         <p ng-bind="comment.message"></p>
     </div>
+    <!-- NEW COMMENT FORM -->
     <form ng-submit="newComment(post)" class="comm">
         <label for="{{post._id}}">
             <h3>Post a comment:</h3>

@@ -24,22 +24,33 @@ var Post = require('mongoose').model('Post');
 var PostComment = require('mongoose').model('Comment');
 
 module.exports = {
+
     // Find an existing user in the database based on session ID (cookie value):
     findUser: function(req, res) {
         // return res.json(req.user);
         // note that the above return is only valid if you were using some sort of middle ware on the front that gathers the user
         // see the `server/server.js` file to better understand how the above fits in
-        console.log('Login Proccess Part Two (3S): Server handling data now, looking up user with following session ID:', req.session.userID);
+        console.log('Login Proccess Part Two (3S): Server handling data now, looking up user with following session ID:', req.session.userID);  /// <<<<======= HERE IS WHERE ISSUE OCCURRS
+        // console.log('....... findUser .......');
+        // console.log('%%%%%%%% SESSION %%%%%%%');
+        // console.log(req.session.userID);
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%%%');
+        // console.log('');
+        // console.log('%%%%%%% REQ USER %%%%%%%');
+        // console.log(req.user);
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%%%');
+        // console.log('........................');
         User.findOne({_id: req.session.userID})
-        .then(function(foundUser) {
-            console.log('Login Proccess Part Two (4S) Database has found user based on ID...', foundUser, 'Sending back to front-end now...');
-            return res.json(foundUser);
-        })
-        .catch(function(err) {
-            console.log('Error when trying to find user in Database...', err);
-            return res.status(500).json(err);
-        })
+            .then(function(foundUser) {
+                console.log('Login Proccess Part Two (4S) Database has found user based on ID...', foundUser, 'Sending back to front-end now...');
+                return res.json(foundUser);
+            })
+            .catch(function(err) {
+                console.log('Error when trying to find user in Database...', err);
+                return res.status(500).json(err);
+            })
     },
+
     // Creates a new post for logged in user:
     newPost: function(req, res) {
         // var user = req.user;
@@ -52,17 +63,7 @@ module.exports = {
                 console.log('Post Process (4S): Your post has been created:', newPost, '...Adding post to user, looking up user now...');
                 // once new post is created, we assign the post's userID to the logged in user:
                 newPost.updateUserID(req.session.userID);
-                // now we look up this user based upon their ID so we can also assign a username to the post (easier for displaying on the views end):
-                User.findById(req.session.userID)
-                    .then(function(foundUser) {
-                        console.log('Post Process (5S): User found...here is the user data:', foundUser, '...updating username now...');
-                        // assigns the found username to the newly created post:
-                        newPost.updateUsername(foundUser.username);
-                        return res.json(newPost);
-                    })
-                    .catch(function(err) {
-                        console.log('Error finding user...', err);
-                    })
+                return res.json(newPost);
             })
             .catch(function(err) {
                 console.log('Post Error Process (1S): Error creating new post...', err);
@@ -70,6 +71,7 @@ module.exports = {
             })
 
     },
+
     // Logs out logged in user and clears out cookies:
     logout: function(req, res) {
         console.log('Logout Proccess (3S): Running logout method on server controller...going to end your session now...');
@@ -80,26 +82,37 @@ module.exports = {
         var message = 'You have been successfully logged out.';
         return res.json(message);
     },
+
     // Gets all posts:
     getPosts: function(req, res) {
+        // console.log('....... getPosts .......');
+        // console.log('%%%%%%%% SESSION %%%%%%%');
+        // console.log(req.session.userID);
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%%%');
+        // console.log('');
+        // console.log('%%%%%%% REQ USER %%%%%%%');
+        // console.log(req.user);
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%%%');
+        // console.log('........................');
         console.log('Get All Posts Process (3S): Server-side wall controller running...going to ping DB now for all posts...');
-
         Post.find({})
-                .populate('comments')
-                .exec()
-                .then(function(commentsAndPosts) {
-                    console.log('%%%%%%%%%%%%%%%%%%%%');
-                    console.log(commentsAndPosts);
-                    console.log('%%%%%%%%%%%%%%%%%%%%');
-                    return res.json(commentsAndPosts);
-                })
-                .catch(function(err) {
-                    console.log(err);
-                })
+            .populate('user')
+            .populate({
+                path: 'comments',
+                populate: {  path: 'user' }
+            })
+            .exec()
+            .then(function(commentsAndPosts) {
+                return res.json(commentsAndPosts);
+            })
+            .catch(function(err) {
+                console.log(err);
+            })
     },
+
     newComment: function(req, res) {
         console.log('Comment Process (2S): Server controller talking now...creating comment with data:', req.body);
-        // creates the new comment object in mongo:
+        // Creates the new comment object in mongo:
         PostComment.create(req.body)
             .then(function(newComment) {
                 console.log('Comment Process (3S): Comment created:', newComment);
@@ -107,56 +120,35 @@ module.exports = {
                 console.log(req.body.postID);
                 console.log('$$$$$$$$$$$$$$$$$$$$$$$$$');
                 console.log('Comment Process (3S-b): Assigning comment to currently logged in user session ID...');
-                // once new comment is created, logs the user using the userID:
+                // Once new comment is created, logs the user using the userID:
                 newComment.updateUserID(req.session.userID);
                 console.log('Comment Process (3S-c): Adding postID to comment...');
                 newComment.updatePostID(req.body.postID);
                 console.log('Comment Process (3S-d): Looking up user session ID and appending username to comment...');
                 console.log(newComment);
-                // look up post and push comment._id into post.comments array
+                // look up relevant post:
                 Post.findById(req.body.postID)
-                    .then(function(foundPost) {
-                        console.log('$^$^$^$^$^$^$^$^$^$^$');
-                        console.log(foundPost);
-                        console.log('$^$^$^$^$^$^$^$^$^$^$');
-                        foundPost.addComment(newComment._id);
-                        console.log(foundPost);
-                    })
-                    .catch(function(err) {
-                        console.log(err);
-                        return res.json(err);
-                    })
-                /*
+                    .then(function(relevantPost) {
+                        // Adds comment._id to `comments` array inside of post:
+                        relevantPost.addComment(newComment._id);
+                        return res.json({
+                            comment: newComment,
+                            post: relevantPost,
+                        });
 
-                    [CODE IMPROVEMENT SCENARIO 1]:
-                    Note: For both the `newComment` and `newPost` methods here, you can improve and streamline your code by
-                    adding the username to the `req.session.username`, so that any logged in user's username and ID are both ready to go
-                    to prevent these unncessary additional mongoose queries.
-
-                    [CODE IMPROVEMENT SCENARIO 2]:
-                    Note: Instead of scenario 1, you could use middleware like Jason showed you, so that if a user is currently logged in,
-                    that user is stored directly in the `req` object itself, and would also prevent these additional mongoose queries and
-                    the addition of a second session object. (more difficult, but worth trying to practice `next()` in express).
-
-                */
-                // looks up the user based upon current session ID, so that we can also add a username to the comment:
-                User.findById(req.session.userID)
-                    .then(function(user) {
-                        // sets username from session lookup to the username on the comment:
-                        newComment.updateUsername(user.username);
-                        console.log('Comment Process (3S-d): username on comment has been updated...');
-                        return res.json({user: user, comment: newComment});
                     })
                     .catch(function(err) {
                         console.log(err);
                         return res.status(500).json(err);
                     })
+
             })
             .catch(function(err) {
                 console.log('Comment Error Process (1S): Server cannot create mongoose comment document, sending error to front end:', err);
                 return res.status(500).json(err);
             })
     },
+
     sessionCheck : function(req, res) {
         console.log('Session Check Process (3S): Checking if session exists now...');
         console.log(req.session.userID);

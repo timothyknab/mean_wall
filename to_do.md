@@ -65,16 +65,3 @@ Development Issues Experienced and Log/Solutions:
     + See QUESTIONS.TXT
 
 Remaining Features To Build:
-
-    + Try the middleware more advanced approach and refactor code (no more than 2 hours) <======= #3
-
-    + I noticed on your posts model, you have created a `comments` array, by which you are pushing records of your comments into the array...I understand
-    why this seems easiest for loading the comments associated with each post, but this can become size costly when your comments start adding up. This method indeed causes 2 copies of each comment to be created. You need to fix this so only one copy of each comment is created, and when comments are needed for a post, the DB
-    is queried and the array is returned and scope updated...figure out how to do this please dude! Sorry for the bummer issue! <===== #1  (SEE SERVER-WALL-CONTROLLER.JS)
-
-        This is where the problem comes in: When you are loading the posts in your views, you
-        are loading the comments array from within the posts. Instead, you somehow have to
-        query the DB for comments relating to that post and return them.
-
-    + Clean up your wall controller in general...wtf is going on there? Looks a little messy...any way to modularize any of your code?
-    (MODULARIZE YOUR SERVER WALL CONTROLLER -- TOO CONFUSING! Will help you to break it down into smaller tasks...); <======== #2

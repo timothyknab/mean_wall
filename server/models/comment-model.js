@@ -13,7 +13,7 @@
 // Setup dependencies:
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
-// bcrypt could go here if we needed to add in a password hashing
+    // bcrypt could go here if we needed to add in a password hashing
 
 // Setup a schema:
 var CommentSchema = new Schema (
@@ -25,7 +25,7 @@ var CommentSchema = new Schema (
             required: [true, 'You cannot submit an empty comment.'],
             trim: true,
         }, // end message field
-        _user: {
+        user: {
             type: Schema.Types.ObjectId,
             ref: 'User'
         },
@@ -46,7 +46,7 @@ var CommentSchema = new Schema (
 
 // Any additional instance methods would go here.
 CommentSchema.methods.updateUserID = function(id) {
-    this._user = id;
+    this.user = id;
     this.save();
     return true;
 };
@@ -57,12 +57,5 @@ CommentSchema.methods.updatePostID = function(id) {
     return true;
 };
 
-CommentSchema.methods.updateUsername = function(username) {
-    this.username = username;
-    this.save();
-    return true;
-};
-
 // Instantiate our model and export it:
-module.exports = mongoose.model('Comment', CommentSchema)
-// model is exported as the name of 'Comment' using the 'CommentSchema' defined above.
+module.exports = mongoose.model('Comment', CommentSchema);
